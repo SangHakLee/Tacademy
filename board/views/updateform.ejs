@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/list/<%=page%>">리스트</a><br>
+    <form action="/update" method="POST">
+			<table>
+				<tr>
+					<th>작성자</th>
+					<td>
+						<input type="hidden" name="num" value="<%=data.num%>"> <!-- 히든으로 글번호 넘겨야 한다.-->
+						<input type="hidden" name="page" value="<%=page%>">
+						<input type="text" name="name" value="<%=data.name%>" size="10" maxlength="10"><!-- data로 가져온기 때문에-->
+					</td>
+				</tr>
+				<tr>
+					<th>제목</th>
+					<td><input type="text" name="title" value="<%=data.title%>" size="50" maxlength="50"></td>
+				</tr>
+				<tr>
+					<th>내용</th>
+					<td><textarea name="content" rows="10" cols="50"><%=data.content%></textarea></td>
+				</tr>
+				<tr>
+					<th>비밀번호</th>
+					<td><input type="password" name="pw" size="12" maxlength="12"></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" value="수정">
+						<input type="reset" value="취소">
+					</td>
+				</tr>
+			</table>
+    </form>
+  </body>
+</html>

@@ -19,8 +19,8 @@
       <!-- index.js에서 data:rows의 data 로 어떤 것인지 구분한다-->
       <% data.forEach(function(item, index){ %>
         <tr>
-          <td><%=item.num%></td>
-          <td><%=item.title%></td>
+          <td><%=max - index%></td>
+          <td><a href="/read/<%=item.num%>/<%=page%>"><%=item.title%></a></td> <!-- ex) /read/4/20-->
           <td><%=item.name%></td>
           <td><%=item.regdate%></td>
           <td><%=item.hit%></td>

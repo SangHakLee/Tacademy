@@ -147,6 +147,25 @@ router.get('/list/:page', function(req, res){
 
 });
 
+// /read 글 하나 클릭시 읽기
+router.get('/read/:num/:page', function(req, res){
+	var num = req.params.num; // params 로 웹 정보를 받아온다
+	var page = req.params.page;
+	pool.getConnection(function(err,conn){
+		if(err) console.error('err', err);
+		conn.query('update board set hit=hit+1 where num=?', [num], function(err, rows){ // 조회수 증가
+			if(err) console.error('err', err);
+			conn.query('select * from board where num=?', [num], function(err, rows){ // 글 읽기
+				if(err) console.error('err', err);
+				console.log('rows', rows); // 로그  찍어보기
+				res.render('read', {title:'글 읽기', data:rows[0], page:page}); // render 하는데 rows의 0번째(select 값), page 번호넘긴다.
+				conn.release
+			})
+		});
+	})
+});
+
+
 //300개 글쓰기
 router.get('/write300', function(req, res){
 	pool.getConnection(function(err, conn){
@@ -163,6 +182,43 @@ router.get('/write300', function(req, res){
 		}
 		res.send('<script>alert("300개의 글 저장 완료!!!");</script>');
 		conn.release();
+	});
+});
+
+// /update 글 수정 페이지
+router.get('/update/:num/:page', function(req, res){
+	var num = req.params.num;
+	var page = req.params.page;
+	pool.getConnection(function(err, conn){
+		if(err) console.error('err', err);
+		conn.query('select * from board where num=?', [num], function(err, rows){
+			//body
+			res.render('updateform', {title:'글 수정', data:rows[0], page:page});
+			conn.release
+		});
+	});
+});
+
+// /update method="POST" 글 수정
+router.post('/update',function(req, res){
+	console.log('req.body=', req.body);
+
+	var num = req.body.num;
+	var pw = req.body.pw;
+	var name = req.body.name;
+	var title = req.body.title;
+	var content = req.body.content;
+	var page = req.body.page
+	pool.getConnection(function(err,conn){
+		if(err) console.error('err', err);
+		conn.query('update board set name=?, title=?, content=? where num=? and pw=?', [name, title, content, num,pw], function(err, row){
+			if(err) console.error('err', err);
+			if(row.affectedRows ==1){ // 성공한 경우
+				res.redirect('/list/'+page); // 해당 페이지로 리다이렉트
+			}else{
+				res.send('<script>alert("비밀번호가 틀려서 되돌아 갑니다."); history.back();</script>') // history.back(); 뒤로 돌아감
+			}
+		});
 	});
 });
 

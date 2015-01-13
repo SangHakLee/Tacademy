@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript">
+      function modify(){
+        location.href ="/update/<%=data.num%>/<%=page%>"; //location이 주소 표시줄, modify 눌렀을때 a 태그로 url 변경
+      }
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/list/<%=page%>">리스트</a><br>
+    <table>
+      <tr>
+        <th width="20%">글번호</th>
+        <td><%=data.num%></td>
+      </tr>
+      <tr>
+        <th>글쓴이</th>
+        <td><%=data.name%></td>
+      </tr>
+      <tr>
+        <th>조회수</th>
+        <td><%=data.hit%></td>
+      </tr>
+      <tr>
+        <th>제목</th>
+        <td><%=data.title%></td>
+      </tr>
+      <tr>
+        <th>내용</th>
+        <td><%=data.content%></td>
+      </tr>
+      <tr>
+        <th>날짜</th>
+        <td><%=data.regdate%></td>
+      </tr>
+      <tr>
+        <th>좋아요</th>
+        <td><%=data.good%></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="button" value="수정" onclick="modify()">
+          <input type="button" value="삭제" >
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
