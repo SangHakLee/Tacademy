@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/write">글쓰기</a><br>
+    <table width="500" border="1">
+    	<tr>
+    		<th>번호</th>
+    		<th>제목</th>
+    		<th>작성자</th>
+    		<th>날짜</th>
+    		<th>조회</th>
+    	</tr>
+      <!-- 반복문 돌면서 item의 내용을 가져온다-->
+      <!-- index.js에서 data:rows의 data 로 어떤 것인지 구분한다-->
+      <% data.forEach(function(item, index){ %>
+        <tr>
+          <td><%=item.num%></td>
+          <td><%=item.title%></td>
+          <td><%=item.name%></td>
+          <td><%=item.regdate%></td>
+          <td><%=item.hit%></td>
+        </tr>
+      <%  }); %>
+    </table>
+  </body>
+</html>
