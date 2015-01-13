@@ -57,7 +57,8 @@ router.post('/write', function(req, res){
 			if(err) console.error('err', err);
 			console.log('row', row);
 			if(row.affectedRows === 1){ // 1이면 저장이 된것
-				res.json({'success':'ok!!'});
+				//res.json({'success':'ok!!'});
+				res.redirect('/list/1'); //글쓰기 성공하면 1페이지로
 			}else{
 				res.json({'success':'fail'});
 			}
@@ -117,7 +118,7 @@ router.get('/list/:page', function(req, res){
 				console.log('rows', rows);
 				var datas = { // list.ejs에서 사용하기 위해 넘겨준다.
 					title : '리스트',
-					data : rows
+					data : rows,
 					page :page,
 					pageSize: pageSize,
 					startPage : startPage,
@@ -128,7 +129,7 @@ router.get('/list/:page', function(req, res){
 				res.render('list', datas); // datas를 던진다 이 datas의 data는 ejs에서 변수로 사용된다.
 				conn.release(); // 꼭 해줘야 함
 			});
-			res.send('startPage :' + startPage +',endPage :' + endPage); //응답을 위한 무의미 데이터
+			//res.send('startPage :' + startPage +',endPage :' + endPage); //응답을 위한 무의미 데이터
 		});
 	});
 	/*pool.getConnection(function(err, conn){
@@ -145,4 +146,24 @@ router.get('/list/:page', function(req, res){
 	});*/
 
 });
+
+//300개 글쓰기
+router.get('/write300', function(req, res){
+	pool.getConnection(function(err, conn){
+		if(err) console.error('err', err);
+
+		for(var i = 0; i <= 300; i++){
+			var pw = '1234';
+			var name = '타잔' + i;
+			var title = i + '원짜리';
+			var content = i + '뭐야 이게';
+			conn.query('insert into board(pw, name, title, content, regdate, hit, good) values(?,?,?,?,now(),0,0)',[pw, name, title, content], function(err, row){
+				if(err) console.error('err', err);
+			});
+		}
+		res.send('<script>alert("300개의 글 저장 완료!!!");</script>');
+		conn.release();
+	});
+});
+
 module.exports = router;

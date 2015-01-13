@@ -8,13 +8,13 @@
     <h1><%= title %></h1>
     <a href="/write">글쓰기</a><br>
     <table width="500" border="1">
-    	<tr>
-    		<th>번호</th>
-    		<th>제목</th>
-    		<th>작성자</th>
-    		<th>날짜</th>
-    		<th>조회</th>
-    	</tr>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>날짜</th>
+        <th>조회</th>
+      </tr>
       <!-- 반복문 돌면서 item의 내용을 가져온다-->
       <!-- index.js에서 data:rows의 data 로 어떤 것인지 구분한다-->
       <% data.forEach(function(item, index){ %>
@@ -27,5 +27,35 @@
         </tr>
       <%  }); %>
     </table>
+    <div style="width:46em; text-align:center; padding-top:2px;"/>
+      <!-- if 네비게이션-->
+      <% if(page > pageSize){ %>
+        [ <a style="text-decoration:none" href="/list/1">◀◀</a> ]
+        [ <a style="text-decoration:none" href="/list/<%=startPage-1%>">◀</a> ]
+      <% }else { %>
+        [<span style="color:gray">◀◀</span>]
+        [<span style="color:gray">◀</span>]
+      <% } %>
+      &nbsp;&nbsp;
+
+      <!-- for 번호-->
+      <% for(var i = startPage; i <= endPage; i++) { %>
+        <% if(i == page) { %> <!-- 현재 page는 링크 X -->
+          [<%=i%>]
+        <% } else {%>
+        [<a href="/list/<%=i%>"><%=i%></a>]
+        <% } %>
+      <% } %>
+      &nbsp;&nbsp;
+
+      <% if(endPage < totalPage) { %>
+        [<a style="text-decoration:none" href="/list/<%=endPage+1%>">▶</a>]
+        [<a style="text-decoration:none" href="/list/<%=totalPage%>">▶▶</a>]
+      <% }else { %>
+        [<span style="color:gray">▶</span>]
+        [<span style="color:gray">▶▶</span>]
+      <% } %>
+    </div>
   </body>
 </html>
+<!-- -->
