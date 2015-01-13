@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var db_board = require('../models/db_board');
+
+/* export로 다른 곳으로 이동 ../models/db_board 이곳에 선언됨
 var mysql = require('mysql'); //mysql 선언
 var pool = mysql.createPool({ // pool 만들기
 	connectionLimit : 150, //최대 연결 수
@@ -8,6 +11,7 @@ var pool = mysql.createPool({ // pool 만들기
 	password : '1234',
 	database : 'test'
 });
+*/
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -46,9 +50,21 @@ router.post('/write', function(req, res){
 		return;
 	}
 	*/
-	var arr = [pw, name, title, content]; // 정보를 배열에 넣어 준다
+
+	//var arr = [pw, name, title, content]; // 정보를 배열에 넣어 준다
+	var datas = [pw, name, title, content]; // arr -> datas로 변경됨
+	db_board.write(datas, function(success){ // db_board.js의 callback 익명함수,  db_board의 write를 수행
+		if(success){
+			res.json({success:'ok'}); // 임시로 성공 메세지
+			//res.redirect('/list/1');
+		}else{
+			res.json({success:'fail'});
+		}
+	});
 
 	//DB 연결 후 insert
+
+	/* export로 이동 db_board.js
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
 		//console.log('conn', conn);
@@ -66,6 +82,7 @@ router.post('/write', function(req, res){
 			conn.release(); // 꼭 해줘야 함
 		});
 	});
+	*/
 });
 
 // /list
@@ -94,6 +111,12 @@ router.get('/list', function(req, res){
 router.get('/list/:page', function(req, res){
 	var page = req.params.page; // 넘어오는 값이 문자이기 때문에 숫자로 바꿔야함
 	page = parseInt(page, 10); // 숫자로 변경
+
+	db_board.list(page, function(datas){ // 이제 이렇게 render한다. MVC 모델
+		res.render('list', datas);
+	});
+
+/* export로 이동 db_board.js
 	var size = 10; // 한 페이지에 보여줄 글 갯수
 	var begin =(page-1)*size // 시작 글번호 mysql은 인덱스가 0부터 시작
 
@@ -132,6 +155,7 @@ router.get('/list/:page', function(req, res){
 			//res.send('startPage :' + startPage +',endPage :' + endPage); //응답을 위한 무의미 데이터
 		});
 	});
+*/
 	/*pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
 
@@ -151,6 +175,11 @@ router.get('/list/:page', function(req, res){
 router.get('/read/:num/:page', function(req, res){
 	var num = req.params.num; // params 로 웹 정보를 받아온다
 	var page = req.params.page;
+
+	db_board.read(num, function(data){
+		res.render('read', {title:'글 읽기', data:data, page:page});
+	});
+/* export로 이동 db_board.js
 	pool.getConnection(function(err,conn){
 		if(err) console.error('err', err);
 		conn.query('update board set hit=hit+1 where num=?', [num], function(err, rows){ // 조회수 증가
@@ -159,10 +188,11 @@ router.get('/read/:num/:page', function(req, res){
 				if(err) console.error('err', err);
 				console.log('rows', rows); // 로그  찍어보기
 				res.render('read', {title:'글 읽기', data:rows[0], page:page}); // render 하는데 rows의 0번째(select 값), page 번호넘긴다.
-				conn.release
-			})
+				conn.release();
+			});
 		});
-	})
+	});
+	*/
 });
 
 // /delete 글 삭제
@@ -171,6 +201,17 @@ router.post('/delete', function(req, res){
 	var page = req.body.page;
 	var num = req.body.num;
 	var pw = req.body.pw;
+	var datas = [num, pw];
+	db_board.delete(datas, function(success){
+		if(success){
+			res.redirect('/list/' + page);
+		}else{
+			res.send('<script>alert("비밀번호가 잘못되었습니다.");history.back();</script>');
+		}
+	});
+
+
+/* export로 이동 db_board.js
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
 		conn.query('delete from board where num=? and pw=?', [num, pw], function(err, row){ // 여기서 가져온 num과 pw가 같으면 삭제
@@ -183,6 +224,7 @@ router.post('/delete', function(req, res){
 			conn.release();
 		});
 	});
+	*/
 });
 
 
@@ -209,6 +251,11 @@ router.get('/write300', function(req, res){
 router.get('/update/:num/:page', function(req, res){
 	var num = req.params.num;
 	var page = req.params.page;
+
+	db_board.updateform(num, function(data){
+		res.render('updateform', {title:'글 수정', data:data, page:page});// rows[0]이 아니라 data를 넣는다.
+	});
+/* export로 이동 db_board.js
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
 		conn.query('select * from board where num=?', [num], function(err, rows){
@@ -217,18 +264,29 @@ router.get('/update/:num/:page', function(req, res){
 			conn.release
 		});
 	});
+	*/
 });
 
 // /update method="POST" 글 수정
 router.post('/update',function(req, res){
 	console.log('req.body=', req.body);
-
 	var num = req.body.num;
 	var pw = req.body.pw;
 	var name = req.body.name;
 	var title = req.body.title;
 	var content = req.body.content;
 	var page = req.body.page
+	var datas = [name, title, content, num,pw]; // MVC 이기 때문에 여기 있다.
+
+	db_board.update(datas, function(success){
+		if(success) {
+			res.redirect('/list/'+page); // 해당 페이지로 리다이렉트
+		}else {
+			res.send('<script>alert("비밀번호가 틀려서 되돌아 갑니다."); history.back();</script>') // history.back(); 뒤로 돌아감
+		}
+	});
+
+/* export로 이동 db_board.js
 	pool.getConnection(function(err,conn){
 		if(err) console.error('err', err);
 		conn.query('update board set name=?, title=?, content=? where num=? and pw=?', [name, title, content, num,pw], function(err, row){
@@ -240,6 +298,7 @@ router.post('/update',function(req, res){
 			}
 		});
 	});
+	*/
 });
 
 module.exports = router;
