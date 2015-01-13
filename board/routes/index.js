@@ -165,6 +165,26 @@ router.get('/read/:num/:page', function(req, res){
 	})
 });
 
+// /delete 글 삭제
+router.post('/delete', function(req, res){
+	console.log('req.body', req.body);
+	var page = req.body.page;
+	var num = req.body.num;
+	var pw = req.body.pw;
+	pool.getConnection(function(err, conn){
+		if(err) console.error('err', err);
+		conn.query('delete from board where num=? and pw=?', [num, pw], function(err, row){ // 여기서 가져온 num과 pw가 같으면 삭제
+			if(err) console.error('err', err);
+			if(row.affectedRows==1){
+				res.redirect('/list/' + page);
+			}else{
+				res.send('<script>alert("비밀번호가 잘못되었습니다.");history.back();</script>');
+			}
+			conn.release();
+		});
+	});
+});
+
 
 //300개 글쓰기
 router.get('/write300', function(req, res){

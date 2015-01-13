@@ -8,6 +8,25 @@
       function modify(){
         location.href ="/update/<%=data.num%>/<%=page%>"; //location이 주소 표시줄, modify 눌렀을때 a 태그로 url 변경
       }
+
+      function delformview(){
+        document.getElementById("frm1").style.display="inline"; // 공간 자체를 없애는것
+        document.getElementById("span1").style.visibility="hidden"; // 공간 나두고 화면에서 안보이는 것
+      }
+
+      function cancel(){
+        document.getElementById("frm1").style.display="none";
+        document.getElementById("span1").style.visibility="";
+      }
+
+      function del(){
+        if(document.getElementById("pw").value == "" ){
+          alert("비밀번호를 입력하세요");
+          document.getElementById("pw").focus();
+          return;
+        }
+        document.frm1.submit(); // 비밀번호가 있으면 전송 form에 name 꼭 필요
+      }
     </script>
   </head>
   <body>
@@ -44,8 +63,19 @@
       </tr>
       <tr>
         <td colspan="2">
-          <input type="button" value="수정" onclick="modify()">
-          <input type="button" value="삭제" >
+          <span id="span1">
+            <input type="button" value="수정" onclick="modify()">
+            <input type="button" value="삭제" onclick="delformview()">
+          </span>
+
+          <!--삭제 폼-->
+          <form id="frm1" name="frm1" action="/delete" method="post" style="display:inline; display:none"> <!--inline 줄바꿈 x-->
+            <input type="hidden" name="page" value="<%=page%>">
+            <input type="hidden" name="num" value="<%=data.num%>">
+            비밀번호 : <input id="pw" type="password" name="pw" size="12" maxlength="12">
+            <input type="button" value="Del" onclick="del()">
+            <input type="button" value="Cancel" onclick="cancel()">
+          </form>
         </td>
       </tr>
     </table>
